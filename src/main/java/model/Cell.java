@@ -49,7 +49,7 @@ public class Cell {
         this.flagged = flagged;
     }
 
-    void setReleased(boolean released) {
+    public void setReleased(boolean released) {
         this.released = released;
     }
 }
