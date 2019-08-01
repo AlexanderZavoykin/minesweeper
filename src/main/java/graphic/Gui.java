@@ -22,7 +22,6 @@ public class Gui {
     private static final String HAPPY_PATH = "src/main/resources/happy.png";
     public static final String SAD_PATH = "src/main/resources/sad.png";
 
-    private GameDifficulty difficulty;
     private GuiCell[][] cells;
 
     private JFrame frame;
@@ -33,10 +32,9 @@ public class Gui {
     private JLabel smileLabel;
 
     public Gui(GameDifficulty gameDifficulty) {
-        difficulty = gameDifficulty;
         createFrame();
-        createFieldPanel();
-        createInfoPanel(difficulty.getBombs());
+        createFieldPanel(gameDifficulty);
+        createInfoPanel(gameDifficulty.getBombs());
         frame.add(infoPanel, BorderLayout.NORTH);
         frame.add(fieldPanel, BorderLayout.CENTER);
         frame.pack();
@@ -55,9 +53,9 @@ public class Gui {
         frame.setLayout(new BorderLayout());
     }
 
-    private void createFieldPanel() {
-        int height = difficulty.getHeigth();
-        int width = difficulty.getWidth();
+    public void createFieldPanel(GameDifficulty gameDifficulty) {
+        int height = gameDifficulty.getHeigth();
+        int width = gameDifficulty.getWidth();
         fieldPanel = new JPanel(new GridLayout(height, width));
         fieldPanel.setBackground(FRAME_BACKGROUND_COLOR);
         cells = new GuiCell[height][width];
@@ -69,6 +67,14 @@ public class Gui {
                 fieldPanel.add(cell);
             }
         }
+    }
+
+    public void resetFieldPanel(GameDifficulty gameDifficulty) {
+        frame.remove(fieldPanel);
+        //frame.repaint();
+        createFieldPanel(gameDifficulty);
+        frame.add(fieldPanel, BorderLayout.CENTER);
+        frame.revalidate();
     }
 
     private void createInfoPanel(int bombs) {
@@ -105,10 +111,6 @@ public class Gui {
 
     public JFrame getFrame() {
         return frame;
-    }
-
-    public JPanel getFieldPanel() {
-        return fieldPanel;
     }
 
     public GuiCell[][] getCells() {
