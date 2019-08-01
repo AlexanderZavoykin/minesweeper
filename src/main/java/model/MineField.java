@@ -1,7 +1,6 @@
 package main.java.model;
 
 import main.java.GameDifficulty;
-import main.java.model.Cell;
 
 public class MineField {
     private Cell[][] cells;
@@ -10,19 +9,24 @@ public class MineField {
     private int width;
     private final int BOMB_CHANCE = 15; // chance to meet the bomb in a cell (per 100)
 
-    MineField(GameDifficulty gf) {
+    public MineField(GameDifficulty gf) {
         height = gf.getHeigth();
         width = gf.getWidth();
         bombs = gf.getBombs();
         cells = new Cell[height][width];
+        for (int i = 0; i < height; i++) {
+            for (int k = 0; k < width; k++) {
+                cells[i][k] = new Cell(i, k);
+            }
+        }
     }
 
-    Cell getCell(int x, int y) {
+    public Cell getCell(int x, int y) {
         return cells[x][y];
     }
 
     // puts bombs to all field`s cells except one with coordinates x and y
-    private void putBombs(int x, int y) {
+    public void putBombs(int x, int y) {
         int counter = 0;
         while (counter <= bombs) {
             for (int i = 0; i < height; i++) {
@@ -44,7 +48,7 @@ public class MineField {
     }
 
     // counts number of bombs around each cell and writes it to each cell`s variable 'bombsAround'
-    private void countBombsAroundEverywhere() {
+    public void countBombsAroundEverywhere() {
         for (int i = 0; i < height; i++) {
             for (int k = 0; k < width; k++) {
                 cells[i][k].setBombsAround(countBombsAroundCell(i, k));
@@ -63,12 +67,11 @@ public class MineField {
         }
         if (cells[x][y].isMined())
             bombsAround--;
-
         return bombsAround;
     }
 
     // counts number of flags around a cell with coordinates x and y
-    private int countFlagsAroundCell(int x, int y) {
+    public int countFlagsAroundCell(int x, int y) {
         int counter = 0; // counter of flags around
         for (int i = correctCoor(x - 1, height); i <= correctCoor(x + 1, height); i++) {
             for (int j = correctCoor(y - 1, width); j <= correctCoor(y + 1, width); j++) {
@@ -101,7 +104,7 @@ public class MineField {
     }
 
     // corrects a coordinate if it goes out of cells` height or width
-    private static int correctCoor(int coor, int bound) {
+    public static int correctCoor(int coor, int bound) {
         if (coor < 0) {
             coor++;
         }
