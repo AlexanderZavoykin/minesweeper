@@ -103,6 +103,10 @@ public class Gui {
         infoPanel.add(counterLabel, BorderLayout.EAST);
     }
 
+    public JFrame getFrame() {
+        return frame;
+    }
+
     public JPanel getFieldPanel() {
         return fieldPanel;
     }
