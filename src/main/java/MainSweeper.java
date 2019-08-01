@@ -172,6 +172,7 @@ public class MainSweeper {
                 GuiCell gCell = gui.getCells()[i][k];
                 Cell cell = field.getCell(i, k);
                 cell.setFlagged(false);
+                gCell.setScaledIcon(null);
                 if (cell.isMined()) {
                     gCell.showBomb();
                 } else {
