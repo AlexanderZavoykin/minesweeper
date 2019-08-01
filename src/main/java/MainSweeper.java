@@ -41,7 +41,7 @@ public class MainSweeper {
     }
 
     private Timer createTimer() {
-        Timer t = new Timer(1000, e -> {
+        return new Timer(1000, e -> {
             seconds++;
             String zero = "";
             if (seconds < 10) {
@@ -49,7 +49,6 @@ public class MainSweeper {
             }
             gui.getTimerLabel().setText(zero + seconds);
         });
-        return t;
     }
 
     private void setListeners(Gui gui, MineField field) {
@@ -197,7 +196,16 @@ public class MainSweeper {
     }
 
     private void restartGame() {
-
+        flags = 0;
+        firstClick = true;
+        inPlay = false;
+        seconds = 0;
+        gui.resetFieldPanel(difficulty);
+        field = new MineField(difficulty);
+        setListeners(gui, field);
+        timer = createTimer();
+        gui.getTimerLabel().setText("00");
+        gui.getCounterLabel().setText(Integer.toString(bombs));
     }
 
     public static void main(String[] args) {
