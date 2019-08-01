@@ -1,4 +1,7 @@
-package main.java;
+package main.java.model;
+
+import main.java.GameDifficulty;
+import main.java.model.Cell;
 
 public class MineField {
     private Cell[][] cells;

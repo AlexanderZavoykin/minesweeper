@@ -1,4 +1,4 @@
-package main.java;
+package main.java.model;
 
 public class Cell {
     private int coorX;
