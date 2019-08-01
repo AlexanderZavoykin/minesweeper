@@ -86,7 +86,15 @@ public class MineField {
         return counter;
     }
 
-    boolean isWon() {
+    public void makeCellsInactive() {
+        for (int i = 0; i < height; i++) {
+            for (int k = 0; k < width; k++) {
+                cells[i][k].setReleased(true);
+            }
+        }
+    }
+
+    public boolean isWon() {
         boolean check = true;
         for (int i = 0; i < height; i++) {
             for (int k = 0; k < width; k++) {
