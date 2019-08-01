@@ -1,13 +1,21 @@
 package main.java;
 
+import main.java.graphic.Gui;
+import main.java.graphic.GuiCell;
+import main.java.model.MineField;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-class Gui {
+public class MainSweeper {
+    private Gui gui;
+    private MineField field;
+
     private static final Color FRAME_BACKGROUND_COLOR = new Color(105, 105, 105);
     static final Color INFO_PANEL_COLOR = new Color(169, 169, 169);
     static final Border BORDER = BorderFactory.createLineBorder(Color.BLACK, 1);
@@ -20,15 +28,16 @@ class Gui {
     private static final String HAPPY_PATH = "src/main/resources/happy.png";
     private static final String SAD_PATH = "src/main/resources/sad.png";
 
-    private final int BOMB_CHANCE = 15; // chance to meet the bomb in a cell (per 100)
+    //private final int BOMB_CHANCE = 15; // chance to meet the bomb in a cell (per 100)
 
-    private int bombs; // number of bombs set
-    private int flags; // number of flags set
-    private int height; // number of cells in vertical direction (means number of lines)
-    private int width; // number of cells in horizontal direction (means number of rows)
+    private GameDifficulty difficulty;
+    private int bombs;
+    private int flags;
+    private int height;
+    private int width;
     private boolean firstClick;
     private boolean inPlay;
-    private Cell[][] cells;
+    private GuiCell[][] cells;
     private int seconds;
     private Timer timer;
 
@@ -39,10 +48,11 @@ class Gui {
     private JLabel counterLabel;
     private JLabel smileLabel;
 
-    Gui(GameDifficulty gf) {
-        this.height = gf.getHeigth();
-        this.width = gf.getWidth();
-        this.bombs = gf.getBombs();
+    Gui(GameDifficulty gameDifficulty) {
+        difficulty = gameDifficulty;
+        this.height = difficulty.getHeigth();
+        this.width = difficulty.getWidth();
+        this.bombs = difficulty.getBombs();
         initVars();
         createFrame();
         createFieldPanel();
@@ -57,19 +67,11 @@ class Gui {
         frame.setVisible(true);
     }
 
-    private void restartGame() {
-        initVars();
-        fieldPanel.removeAll();
-        createFieldPanel();
-        frame.add(fieldPanel);
-        timerLabel.setText("00");
-    }
-
     private void initVars() {
         flags = 0;
         firstClick = true;
         inPlay = false;
-        cells = new Cell[height][width];
+        cells = new GuiCell[height][width];
         seconds = 0;
         timer = new Timer(1000, e -> {
             seconds++;
@@ -80,22 +82,24 @@ class Gui {
             timerLabel.setText(zero + seconds);
         });
     }
-    
+
     private void createFieldPanel() {
         fieldPanel = new JPanel(new GridLayout(height, width));
         fieldPanel.setBackground(FRAME_BACKGROUND_COLOR);
         for (int i = 0; i < height; i++) {
             for (int k = 0; k < width; k++) {
-                Cell cell = new Cell(i, k);
+                GuiCell cell = new GuiCell();
+                cell.setName(i + "-" + k);
                 cells[i][k] = cell;
                 fieldPanel.add(cell);
                 cell.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) {
                         // get coordinates of the pressed cell
-                        Cell pressedCell = (Cell) e.getSource();
-                        int x = pressedCell.getCoorX();
-                        int y = pressedCell.getCoorY();
+                        GuiCell pressedCell = (GuiCell) e.getSource();
+                        String[] xy = pressedCell.getName().split("-");
+                        int x = Integer.parseInt(xy[0]);
+                        int y = Integer.parseInt(xy[1]);
                         // left click
                         if (e.getButton() == MouseEvent.BUTTON1) {
                             // initiate new field with bombs if this is the first user`s click
@@ -184,7 +188,7 @@ class Gui {
     }
 
     private void putPickFlag(int x, int y) {
-        Cell cell = cells[x][y];
+        GuiCell cell = cells[x][y];
         if (!cell.isReleased()) {
             if (!cell.isFlagged()) {
                 // put flag
@@ -206,7 +210,7 @@ class Gui {
 
     // releases a cell with with coordinates x and y
     private void releaseCell(int x, int y) {
-        Cell cell = cells[x][y];
+        GuiCell cell = cells[x][y];
         if (!cell.isReleased() && !cell.isFlagged()) {
             cell.release();
             if (cell.isMined()) {
@@ -234,103 +238,15 @@ class Gui {
     void releaseAllCells() {
         for (int i = 0; i < height; i++) {
             for (int k = 0; k < width; k++) {
-                Cell cell = cells[i][k];
+                GuiCell cell = cells[i][k];
                 cell.setFlagged(false);
                 cell.release();
             }
         }
     }
 
-    // puts bombs to all field`s cells except one with coordinates x and y
-    private void putBombs(int x, int y) {
-        int counter = 0; //counter of installed bombs
-        while (counter <= bombs) {
-            for (int i = 0; i < height; i++) {
-                for (int k = 0; k < width; k++) {
-                    int temp = (int) (Math.random() * (width * height));
-                    if ((temp <= BOMB_CHANCE) && (!cells[i][k].isMined()) && (i != x) && (k != y)) {
-                        cells[i][k].setMined(true);
-                        counter++;
-                        if (counter == bombs)
-                            break;
-                    }
-                }
-                if (counter == bombs)
-                    break;
-            }
-            if (counter == bombs)
-                break;
-        }
-    }
 
-    // counts number of bombs around each cell and writes it to each cell`s variable 'bombsAround'
-    private void countBombsAroundEverywhere() {
-        for (int i = 0; i < height; i++) {
-            for (int k = 0; k < width; k++) {
-                cells[i][k].setBombsAround(countBombsAroundCell(i, k));
-            }
-        }
-    }
 
-    // counts number of bombs around a cell with coordinates x and y
-    private int countBombsAroundCell(int x, int y) {
-        int bombsAround = 0;
-        for (int i = correctCoor(x - 1, height); i <= correctCoor(x + 1, height); i++) {
-            for (int j = correctCoor(y - 1, width); j <= correctCoor(y + 1, width); j++) {
-                if (cells[i][j].isMined())
-                    bombsAround++;
-            }
-        }
-        if (cells[x][y].isMined())
-            bombsAround--;
-
-        return bombsAround;
-    }
-
-    // counts number of flags around a cell with coordinates x and y
-    private int countFlagsAroundCell(int x, int y) {
-        int counter = 0; // counter of flags around
-        for (int i = correctCoor(x - 1, height); i <= correctCoor(x + 1, height); i++) {
-            for (int j = correctCoor(y - 1, width); j <= correctCoor(y + 1, width); j++) {
-                if (cells[i][j].isFlagged()) {
-                    counter++;
-                }
-            }
-        }
-        if (cells[x][y].isFlagged()) {
-            counter--;
-        }
-        return counter;
-    }
-
-    boolean isWon() {
-        boolean check = true;
-        for (int i = 0; i < height; i++) {
-            for (int k = 0; k < width; k++) {
-                if ((cells[i][k].isMined()) && (!cells[i][k].isFlagged())) {
-                    check = false;
-                    break;
-                }
-                if ((!cells[i][k].isMined()) && (!cells[i][k].isReleased())) {
-                    check = false;
-                    break;
-                }
-            }
-        }
-        return check;
-    }
-
-    // corrects a coordinate if it goes out of cells` height or width
-    private static int correctCoor(int coor, int bound) {
-        if (coor < 0) {
-            coor++;
-        }
-        if (coor > bound - 1) {
-            coor--;
-        }
-        return coor;
-    }
-    
     private void initGameOver() {
         smileLabel.setIcon(Util.scaleIcon(SAD_PATH, 50));
         timer.stop();
@@ -338,10 +254,23 @@ class Gui {
     }
 
     private void initYouWin() {
-        if (isWon()) {
-            smileLabel.setIcon(Util.scaleIcon(CHAMP_PATH, 50));
-            timer.stop();
-        }
+        smileLabel.setIcon(Util.scaleIcon(CHAMP_PATH, 50));
+        timer.stop();
     }
+
+    private void restartGame() {
+        initVars();
+        fieldPanel.removeAll();
+        createFieldPanel();
+        frame.add(fieldPanel);
+        timerLabel.setText("00");
+    }
+
+
+
+
+
+
+
 
 }

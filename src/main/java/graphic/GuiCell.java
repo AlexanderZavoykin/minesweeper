@@ -1,4 +1,6 @@
-package main.java;
+package main.java.graphic;
+
+import main.java.Util;
 
 import javax.swing.*;
 import java.awt.*;
