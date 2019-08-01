@@ -5,7 +5,7 @@ import main.java.Util;
 import javax.swing.*;
 import java.awt.*;
 
-class GuiCell extends JLabel {
+public class GuiCell extends JLabel {
     private static final Color MINED_CELL_COLOR = new Color(255, 0, 0);
     private static final Color UNRELEASED_CELL_COLOR = new Color(70, 130, 180);
     private static final Color RELEASED_CELL_COLOR = new Color(192, 192, 192);
@@ -18,7 +18,7 @@ class GuiCell extends JLabel {
     private static final Color SEVEN_COLOR = new Color(0, 250, 200);
     private static final Color EIGHT_COLOR = Color.BLACK;
 
-    GuiCell() {
+    public GuiCell() {
         super();
         setPreferredSize(new Dimension(50, 50));
         setBackground(UNRELEASED_CELL_COLOR);
@@ -26,12 +26,12 @@ class GuiCell extends JLabel {
         setOpaque(true);
     }
 
-    void showBomb() {
+    public void showBomb() {
         setBackground(MINED_CELL_COLOR);
         setScaledIcon(Gui.BOMB_PATH);
     }
 
-    void showText(int bombsAround) {
+    public void showText(int bombsAround) {
         setBackground(RELEASED_CELL_COLOR);
         switch (bombsAround) {
             case 1:
@@ -62,7 +62,7 @@ class GuiCell extends JLabel {
     }
 
     // sets scaled icon to the cell
-    void setScaledIcon(String path) {
+    public void setScaledIcon(String path) {
         setIcon(Util.scaleIcon(path, 40));
         setHorizontalAlignment(SwingConstants.CENTER);
         setVerticalAlignment(SwingConstants.CENTER);

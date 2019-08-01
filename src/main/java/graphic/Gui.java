@@ -16,13 +16,14 @@ public class Gui {
     static final Font FONT = new Font("Times Roman", Font.BOLD, 30);
 
     static final String BOMB_PATH = "src/main/resources/bomb.png";
-    private static final String CHAMP_PATH = "src/main/resources/champagne.png";
+    public static final String CHAMP_PATH = "src/main/resources/champagne.png";
     private static final String CLOCK_PATH = "src/main/resources/clock.png";
-    private static final String FLAG_PATH = "src/main/resources/flag.png";
+    public static final String FLAG_PATH = "src/main/resources/flag.png";
     private static final String HAPPY_PATH = "src/main/resources/happy.png";
-    private static final String SAD_PATH = "src/main/resources/sad.png";
+    public static final String SAD_PATH = "src/main/resources/sad.png";
 
     private GameDifficulty difficulty;
+    private GuiCell[][] cells;
 
     private JFrame frame;
     private JPanel fieldPanel;
@@ -31,7 +32,7 @@ public class Gui {
     private JLabel counterLabel;
     private JLabel smileLabel;
 
-    Gui(GameDifficulty gameDifficulty) {
+    public Gui(GameDifficulty gameDifficulty) {
         difficulty = gameDifficulty;
         createFrame();
         createFieldPanel();
@@ -59,9 +60,11 @@ public class Gui {
         int width = difficulty.getWidth();
         fieldPanel = new JPanel(new GridLayout(height, width));
         fieldPanel.setBackground(FRAME_BACKGROUND_COLOR);
+        cells = new GuiCell[height][width];
         for (int i = 0; i < height; i++) {
             for (int k = 0; k < width; k++) {
                 GuiCell cell = new GuiCell();
+                cells[i][k] = cell;
                 cell.setName(i + "-" + k);
                 fieldPanel.add(cell);
             }
@@ -102,6 +105,10 @@ public class Gui {
 
     public JPanel getFieldPanel() {
         return fieldPanel;
+    }
+
+    public GuiCell[][] getCells() {
+        return cells;
     }
 
     public JLabel getTimerLabel() {

@@ -25,15 +25,15 @@ public class Cell {
         return bombsAround;
     }
 
-    boolean isMined() {
+    public boolean isMined() {
         return mined;
     }
 
-    boolean isFlagged() {
+    public boolean isFlagged() {
         return flagged;
     }
 
-    boolean isReleased() {
+    public boolean isReleased() {
         return released;
     }
 
@@ -45,7 +45,7 @@ public class Cell {
         this.mined = mined;
     }
 
-    void setFlagged(boolean flagged) {
+    public void setFlagged(boolean flagged) {
         this.flagged = flagged;
     }
 
