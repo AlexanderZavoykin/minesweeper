@@ -71,16 +71,13 @@ class Gui {
         inPlay = false;
         cells = new Cell[height][width];
         seconds = 0;
-        timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                seconds++;
-                String zero = "";
-                if (seconds < 10) {
-                    zero = "0";
-                }
-                timerLabel.setText(zero + Integer.toString(seconds));
+        timer = new Timer(1000, e -> {
+            seconds++;
+            String zero = "";
+            if (seconds < 10) {
+                zero = "0";
             }
+            timerLabel.setText(zero + seconds);
         });
     }
     
@@ -180,12 +177,6 @@ class Gui {
         counterLabel.setVerticalAlignment(SwingConstants.CENTER);
         counterLabel.setPreferredSize(new Dimension(100, 60));
         counterLabel.setOpaque(true);
-        counterLabel.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-
-            }
-        });
 
         infoPanel.add(timerLabel, BorderLayout.WEST);
         infoPanel.add(smileLabel, BorderLayout.CENTER);
@@ -339,8 +330,7 @@ class Gui {
         }
         return coor;
     }
-
-
+    
     private void initGameOver() {
         smileLabel.setIcon(Util.scaleIcon(SAD_PATH, 50));
         timer.stop();
